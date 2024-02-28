@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Curiosity</string>
+    <string name="alarm">Alarm</string>
+    <string name="doorbell">Doorbell</string>
+    <string name="kettle">Kettle</string>
+    <string name="fridge">Fridge</string>
+</resources>
