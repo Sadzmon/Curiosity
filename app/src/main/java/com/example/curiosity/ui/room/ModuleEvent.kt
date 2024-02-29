@@ -9,7 +9,6 @@ import com.example.curiosity.ui.datasource.Module
 
 sealed interface ModuleEvent {
     data object SaveModule: ModuleEvent
-    data object UpdateModule : ModuleEvent
     data class SetModuleName( val moduleName: String ): ModuleEvent
     data class SetModuleType( val moduleType: String ): ModuleEvent
     data class SetTopic( val topic: String ): ModuleEvent
@@ -18,7 +17,7 @@ sealed interface ModuleEvent {
     data class SetLastDeviceState( val lastDeviceState: String ): ModuleEvent
     data object ShowDialog: ModuleEvent
     data object HideDialog: ModuleEvent
-    data class ShowSettingsDialog( val moduleID: Int ): ModuleEvent
+    data class ShowSettingsDialog( val moduleID: Int, val listIndex: Int ): ModuleEvent
     data object HideSettingDialog: ModuleEvent
     data object ShowTypeDialog: ModuleEvent
     data object HideTypeDialog: ModuleEvent

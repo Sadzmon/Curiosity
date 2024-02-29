@@ -14,5 +14,8 @@ data class ModuleState (
     var isShowSettings: Boolean = false,
     var isShowTypeDialog: Boolean = false,
     var moduleID: Int = 0,
+    var listIndex: Int = 0,
     var sortType: SortType = SortType.NAME
 )
+
+

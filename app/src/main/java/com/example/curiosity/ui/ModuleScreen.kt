@@ -60,7 +60,6 @@ fun ModuleScreen(
             DialogModuleSettings(
                 state   = state,
                 onEvent = onEvent,
-                module = state.modules[ state.moduleID ]
             )
         }
         HomeBody(
@@ -165,7 +164,7 @@ private fun ModuleList(
                     .padding(16.dp)
                     .clickable {
                         onModuleClick(item)
-                        onEvent(ModuleEvent.ShowSettingsDialog( itemList.indexOf(item) ))
+                        onEvent(ModuleEvent.ShowSettingsDialog( item.id, itemList.indexOf(item ) ) )
                     })
         }
     }

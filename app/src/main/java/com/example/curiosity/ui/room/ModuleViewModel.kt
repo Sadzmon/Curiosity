@@ -18,6 +18,19 @@ class ModuleViewModel(
     private val dao: ModuleDao
 ): ViewModel() {
 
+    /**
+     * Convert ModuleState to Module.
+     */
+    private fun ModuleState.toModule(): Module = Module(
+        moduleName = moduleName,
+        moduleType = moduleType,
+        topic = topic,
+        alarmingInfo = alarmingInfo,
+        activeState = activeState,
+        lastDeviceState = lastDeviceState,
+        id = moduleID,
+    )
+
     private val _sortType = MutableStateFlow( SortType.NAME )
     private val _modules = _sortType
         .flatMapLatest { sortType  ->
@@ -31,6 +44,24 @@ class ModuleViewModel(
         .stateIn( viewModelScope, SharingStarted.WhileSubscribed(), emptyList() )
 
     private val _state = MutableStateFlow( ModuleState() )
+
+    /**
+     * Set _state default values.
+     */
+    private fun _stateClear()
+    {
+        _state.update { it.copy(
+            isAddingModule = false,
+            moduleName = "",
+            moduleType = "",
+            topic = "",
+            alarmingInfo = "",
+            activeState = true,
+            lastDeviceState = "",
+            isShowSettings = false
+        ) }
+    }
+
     val state = combine( _state, _sortType, _modules ) { state, sortType, modules ->
         state.copy(
             modules = modules,
@@ -57,35 +88,16 @@ class ModuleViewModel(
                 val moduleType = state.value.moduleType
                 val topic      = state.value.topic
 
-                if ( moduleName.isBlank() || moduleType.isBlank() || topic.isBlank() )
+                if ( moduleName.isBlank() || !moduleType.isBlank() || topic.isBlank() )
                 {
                     Log.i( "ModuleEvent.SaveModule", "Did not proceed.")
                     return
                 }
 
-                val module = Module(
-                    moduleName = moduleName,
-                    moduleType = moduleType,
-                    topic = topic,
-                    alarmingInfo = "",
-                    activeState = true,
-                    lastDeviceState = ""
-                )
-
                 viewModelScope.launch {
-                    dao.upsertModule(module)
+                    dao.upsertModule( state.value.toModule() )
                 }
-
-                _state.update { it.copy(
-                    isAddingModule = false,
-                    moduleName = "",
-                    moduleType = "",
-                    topic = "",
-                    alarmingInfo = "",
-                    activeState = true,
-                    lastDeviceState = "",
-                    isShowSettings = false
-                ) }
+                _stateClear()
             }
             is ModuleEvent.SetActiveState -> {
                     _state.update { it.copy(
@@ -129,15 +141,14 @@ class ModuleViewModel(
             }
 
             ModuleEvent.HideSettingDialog -> {
-                _state.update { it.copy(
-                    isShowSettings = false
-                ) }
+                _stateClear()
             }
             is ModuleEvent.ShowSettingsDialog -> {
                 _state.update { it.copy(
-                    moduleName = state.value.modules[event.moduleID].moduleName,
-                    moduleType = state.value.modules[event.moduleID].moduleType,
-                    topic = state.value.modules[event.moduleID].topic,
+                    moduleID = event.moduleID,
+                    moduleName = state.value.modules[event.listIndex].moduleName,
+                    moduleType = state.value.modules[event.listIndex].moduleType,
+                    topic = state.value.modules[event.listIndex].topic,
                     isShowSettings = true
                 ) }
             }
@@ -151,34 +162,6 @@ class ModuleViewModel(
                 _state.update { it.copy(
                     isShowTypeDialog = true
                 ) }
-            }
-
-            ModuleEvent.UpdateModule -> {
-                val module = Module(
-                    moduleName = state.value.moduleName,
-                    moduleType = state.value.moduleType,
-                    topic = state.value.topic,
-                    alarmingInfo = "alarmingInfo",
-                    activeState = true,
-                    lastDeviceState = "",
-                    id = 1
-                )
-                viewModelScope.launch {
-                    dao.upsertModule(module)
-                }
-
-                _state.update { it.copy(
-                    isAddingModule = false,
-                    moduleName = "",
-                    moduleType = "",
-                    topic = "",
-                    alarmingInfo = "",
-                    activeState = true,
-                    lastDeviceState = "",
-                    isShowSettings = false,
-                    moduleID = state.value.moduleID
-                ) }
-
             }
         }
     }

@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.curiosity.ui.datasource.DataSource
-import com.example.curiosity.ui.datasource.Module
 import com.example.curiosity.ui.room.ModuleEvent
 import com.example.curiosity.ui.room.ModuleState
 import kotlin.reflect.KFunction1
@@ -31,8 +30,7 @@ import kotlin.reflect.KFunction1
 @Composable
 fun DialogModuleSettings(
     state: ModuleState,
-    onEvent: KFunction1<ModuleEvent, Unit>,
-    module: Module
+    onEvent: KFunction1<ModuleEvent, Unit>
 ) {
     Dialog(
         onDismissRequest = { onEvent(ModuleEvent.HideSettingDialog) },
@@ -49,9 +47,6 @@ fun DialogModuleSettings(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-                Text( text = state.moduleName )
-
                 TextField( value = state.moduleName, onValueChange = {
                     onEvent( ModuleEvent.SetModuleName( it ) )
                 },
@@ -67,7 +62,6 @@ fun DialogModuleSettings(
                         .height(16.dp)
                         .clickable { onEvent(ModuleEvent.ShowTypeDialog) }
                 ){
-                    Text( text = module.moduleType )
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
                         contentDescription = "ArrowDropDown"
@@ -92,7 +86,7 @@ fun DialogModuleSettings(
 
                     Button(
                         onClick = {
-                            onEvent(ModuleEvent.UpdateModule)
+                            onEvent(ModuleEvent.SaveModule)
                                   },
                         modifier = Modifier.padding(top = 16.dp)
                     ) {

@@ -2,7 +2,10 @@ package com.example.curiosity.ui.room
 
 import androidx.room.Dao
 import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import androidx.room.Upsert
 import com.example.curiosity.ui.datasource.Module
 import kotlinx.coroutines.flow.Flow
@@ -30,4 +33,7 @@ interface ModuleDao {
 
     @Query("SELECT * FROM module ORDER BY activeState ASC")
     fun getModulesOrderedByActiveState(): Flow<List<Module>>
+
+    @Query("SELECT * from module WHERE id = :id")
+    fun getModuleByID( id: Int ): Flow<Module>
 }
