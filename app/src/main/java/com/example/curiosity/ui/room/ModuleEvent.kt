@@ -17,10 +17,11 @@ sealed interface ModuleEvent {
     data class SetLastDeviceState( val lastDeviceState: String ): ModuleEvent
     data object ShowDialog: ModuleEvent
     data object HideDialog: ModuleEvent
-    data class ShowSettingsDialog( val moduleID: Int, val listIndex: Int ): ModuleEvent
+    data class ShowSettingsDialog( val listIndex: Int ): ModuleEvent
     data object HideSettingDialog: ModuleEvent
     data object ShowTypeDialog: ModuleEvent
     data object HideTypeDialog: ModuleEvent
+    data class SaveTypeDialog( val moduleType: String ): ModuleEvent
     data class SortModules(val sortType: SortType): ModuleEvent
     data class DeleteModule( val module: Module): ModuleEvent
 }

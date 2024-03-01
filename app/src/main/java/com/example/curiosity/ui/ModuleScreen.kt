@@ -1,6 +1,6 @@
 package com.example.curiosity.ui
 
-import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -26,8 +27,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.curiosity.R
+import com.example.curiosity.ui.datasource.DataSource
 import com.example.curiosity.ui.datasource.Module
 import com.example.curiosity.ui.room.ModuleEvent
 import com.example.curiosity.ui.room.ModuleState
@@ -37,7 +43,7 @@ import kotlin.reflect.KFunction1
 @Composable
 fun ModuleScreen(
     state: ModuleState,
-    onEvent: KFunction1<ModuleEvent, Unit>
+    onEvent: KFunction1<ModuleEvent, Unit>,
 )
 {
     Scaffold (
@@ -47,7 +53,7 @@ fun ModuleScreen(
                 Icon( imageVector = Icons.Default.Add, contentDescription = "Add module")
             }
         },
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier
     ){ innerPadding ->
         if( state.isAddingModule )
         {
@@ -56,7 +62,6 @@ fun ModuleScreen(
 
         if ( state.isShowSettings )
         {
-            Log.d("Padááš?", "${state.moduleID}")
             DialogModuleSettings(
                 state   = state,
                 onEvent = onEvent,
@@ -69,6 +74,7 @@ fun ModuleScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
         )
     }
 }
@@ -96,6 +102,7 @@ private fun HomeBody(
                 state = state,
                 onEvent = onEvent,
                 modifier = Modifier
+                    .padding(16.dp)
             )
             ModuleList(
                 itemList = state.modules,
@@ -162,9 +169,10 @@ private fun ModuleList(
             ModuleCard(module = item,
                 modifier = Modifier
                     .padding(16.dp)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .clickable {
                         onModuleClick(item)
-                        onEvent(ModuleEvent.ShowSettingsDialog( item.id, itemList.indexOf(item ) ) )
+                        onEvent(ModuleEvent.ShowSettingsDialog(itemList.indexOf(item)))
                     })
         }
     }
@@ -173,33 +181,89 @@ private fun ModuleList(
 @Composable
 private fun ModuleCard(
     module: Module,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        colors = CardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            disabledContentColor = MaterialTheme.colorScheme.onTertiary,
+            disabledContainerColor = MaterialTheme.colorScheme.tertiary
+        )
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Row{
+                Icon(
+                    painter = painterResource(id = chooseIcon(name = module.moduleType)),
+                    contentDescription = "Module's pictogram",
+                    modifier = Modifier.padding( end =  16.dp )
+                )
                 Text(
                     text = module.moduleName,
-                    style = MaterialTheme.typography.titleLarge,
+                    fontSize = 30.sp,
                 )
                 Spacer(Modifier.weight(1f))
-                Text(
-                    text = module.moduleType,
-                    style = MaterialTheme.typography.titleMedium
-                )
+
             }
-            Text(
-                text = module.topic,
-                style = MaterialTheme.typography.titleMedium
-            )
+            Row {
+                Column {
+                    Text(
+                        text = module.moduleType,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = module.topic,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+
+            }
         }
+    }
+}
+
+/**
+ * Function which choose wright icon to name of module.
+ */
+@Composable
+fun chooseIcon( name:String ): Int
+{
+    return when (name)
+    {
+        stringResource(id = DataSource.modules[0].first) -> DataSource.modules[0].second
+        stringResource(id = DataSource.modules[1].first) -> DataSource.modules[1].second
+        stringResource(id = DataSource.modules[2].first) -> DataSource.modules[2].second
+        stringResource(id = DataSource.modules[3].first) -> DataSource.modules[3].second
+        else -> R.drawable.baseline_close_24
+    }
+}
+
+/**
+ * Choose description.
+ */
+@Composable
+fun ChooseDescription( module: Module )
+{
+    if ( module.moduleName == "Alarm" )
+    {
+        Text(
+            text = "Alarming time: ${module.alarmingInfo}",
+            fontSize = 24.sp,
+            modifier = Modifier
+                .padding(start = 12.dp)
+                .clickable {  }
+        )
+    } else
+    {
+        Text(
+            text = "Status: ${module.lastDeviceState}",
+            fontSize = 24.sp,
+            modifier = Modifier.padding(start = 12.dp)
+        )
     }
 }

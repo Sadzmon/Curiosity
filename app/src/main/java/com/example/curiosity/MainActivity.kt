@@ -13,10 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
+import com.example.compose.CuriosityTheme
 import com.example.curiosity.ui.ModuleScreen
 import com.example.curiosity.ui.room.ModuleDatabase
 import com.example.curiosity.ui.room.ModuleViewModel
-import com.example.curiosity.ui.theme.CuriosityTheme
 
 class MainActivity : ComponentActivity() {
 

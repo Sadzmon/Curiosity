@@ -28,7 +28,7 @@ class ModuleViewModel(
         alarmingInfo = alarmingInfo,
         activeState = activeState,
         lastDeviceState = lastDeviceState,
-        id = moduleID,
+        id = moduleID
     )
 
     private val _sortType = MutableStateFlow( SortType.NAME )
@@ -38,7 +38,7 @@ class ModuleViewModel(
             {
                 SortType.NAME -> dao.getModulesOrderedByName()
                 SortType.TYPE -> dao.getModulesOrderedByType()
-                SortType.ACTIVE_STATE -> dao.getModulesOrderedByActiveState()
+                SortType.ACTIVE -> dao.getModulesOrderedByActiveState()
             }
         }
         .stateIn( viewModelScope, SharingStarted.WhileSubscribed(), emptyList() )
@@ -58,7 +58,8 @@ class ModuleViewModel(
             alarmingInfo = "",
             activeState = true,
             lastDeviceState = "",
-            isShowSettings = false
+            isShowSettings = false,
+            moduleID = 0
         ) }
     }
 
@@ -88,7 +89,7 @@ class ModuleViewModel(
                 val moduleType = state.value.moduleType
                 val topic      = state.value.topic
 
-                if ( moduleName.isBlank() || !moduleType.isBlank() || topic.isBlank() )
+                if ( moduleName.isBlank() || moduleType.isBlank() || topic.isBlank() )
                 {
                     Log.i( "ModuleEvent.SaveModule", "Did not proceed.")
                     return
@@ -132,6 +133,7 @@ class ModuleViewModel(
             ModuleEvent.ShowDialog -> {
                 _state.update {
                     it.copy(
+                        moduleID = 0,
                         isAddingModule = true
                     )
                 }
@@ -145,22 +147,33 @@ class ModuleViewModel(
             }
             is ModuleEvent.ShowSettingsDialog -> {
                 _state.update { it.copy(
-                    moduleID = event.moduleID,
+                    listIndex  = event.listIndex,
+                    moduleID   = state.value.modules[event.listIndex].id,
                     moduleName = state.value.modules[event.listIndex].moduleName,
                     moduleType = state.value.modules[event.listIndex].moduleType,
-                    topic = state.value.modules[event.listIndex].topic,
+                    topic      = state.value.modules[event.listIndex].topic,
                     isShowSettings = true
                 ) }
+                Log.w("id", "${state.value.moduleID}")
+                Log.e("indexId", "")
             }
 
             ModuleEvent.HideTypeDialog -> {
                 _state.update { it.copy(
+                    moduleType = state.value.modules[ state.value.listIndex ].moduleType,
                     isShowTypeDialog = false
                 )}
             }
             ModuleEvent.ShowTypeDialog -> {
                 _state.update { it.copy(
                     isShowTypeDialog = true
+                ) }
+            }
+
+            is ModuleEvent.SaveTypeDialog -> {
+                _state.update { it.copy(
+                    moduleType = event.moduleType,
+                    isShowTypeDialog = false
                 ) }
             }
         }
