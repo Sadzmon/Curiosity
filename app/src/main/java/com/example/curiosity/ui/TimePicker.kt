@@ -7,13 +7,14 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import com.example.curiosity.ui.room.ModuleEvent
 import com.example.curiosity.ui.room.ModuleState
+import kotlin.reflect.KFunction1
 
 /**
  * Function which create UI for picking time.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTimePicker( state: ModuleState ) {
+fun MyTimePicker( state: ModuleState, onEvent: KFunction1<ModuleEvent, Unit> ) {
 
     var hour   = 0
     var minute = 0
@@ -27,20 +28,14 @@ fun MyTimePicker( state: ModuleState ) {
     val timePickerState = rememberTimePickerState(
         initialHour = hour,
         initialMinute = minute,
-        is24Hour = true )
+        is24Hour = true
+    )
 
     TimePicker( state = timePickerState )
 
     Text(text = "Selected H:M = ${timePickerState.hour} : ${timePickerState.minute}")
-}
 
-fun SeperateAlarmInfo( state: ModuleState )
-{
+    val alarmingInfo = "${timePickerState.hour}:${timePickerState.minute}"
 
-    if ( state.alarmingInfo.isBlank() )
-    {
-        return
-    }
-
-
+    TimePickerButtons( alarmingInfo = alarmingInfo , onEvent = onEvent )
 }

@@ -12,7 +12,6 @@ sealed interface ModuleEvent {
     data class SetModuleName( val moduleName: String ): ModuleEvent
     data class SetModuleType( val moduleType: String ): ModuleEvent
     data class SetTopic( val topic: String ): ModuleEvent
-    data class SetAlarmingInfo( val alarmInfo: String ): ModuleEvent
     data class SetActiveState( val activeState: Boolean ): ModuleEvent
     data class SetLastDeviceState( val lastDeviceState: String ): ModuleEvent
     data object ShowDialog: ModuleEvent
@@ -22,6 +21,9 @@ sealed interface ModuleEvent {
     data object ShowTypeDialog: ModuleEvent
     data object HideTypeDialog: ModuleEvent
     data class SaveTypeDialog( val moduleType: String ): ModuleEvent
+    data class ShowTimepicker( val listIndex: Int ): ModuleEvent
+    data object HideTimepicker: ModuleEvent
+    data class SetAlarmingInfo( val alarmInfo: String ): ModuleEvent
     data class SortModules(val sortType: SortType): ModuleEvent
     data class DeleteModule( val module: Module): ModuleEvent
 }

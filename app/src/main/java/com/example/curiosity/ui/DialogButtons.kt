@@ -127,14 +127,14 @@ fun savable( state: ModuleState ): Boolean
  */
 @Composable
 fun TimePickerButtons(
-    type: String,
+    alarmingInfo: String,
     onEvent: KFunction1<ModuleEvent, Unit>,
     dismiss: Boolean = false
 )
 {
     if ( dismiss ) {
         Button(
-            onClick = { onEvent( ModuleEvent.HideTypeDialog ) },
+            onClick = { onEvent( ModuleEvent.HideTimepicker ) },
             colors = ButtonColors(
                 disabledContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 disabledContentColor = MaterialTheme.colorScheme.error,
@@ -148,7 +148,7 @@ fun TimePickerButtons(
     } else {
         Button(
             onClick = {
-                onEvent( ModuleEvent.SaveTypeDialog( type ) )
+                onEvent( ModuleEvent.SetAlarmingInfo( alarmingInfo ) )
 
             },
             colors = ButtonColors(

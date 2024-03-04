@@ -1,5 +1,7 @@
 package com.example.curiosity.ui
 
+import TimePickerDialog
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -48,7 +50,11 @@ fun ModuleScreen(
 {
     Scaffold (
         floatingActionButton = {
-            FloatingActionButton(onClick = { onEvent(ModuleEvent.ShowDialog) })
+            FloatingActionButton(
+                onClick = { onEvent(ModuleEvent.ShowDialog) },
+                contentColor = MaterialTheme.colorScheme.onTertiary,
+                containerColor = MaterialTheme.colorScheme.tertiary
+            )
             {
                 Icon( imageVector = Icons.Default.Add, contentDescription = "Add module")
             }
@@ -67,8 +73,12 @@ fun ModuleScreen(
                 onEvent = onEvent,
             )
         }
+        Log.e("isTimePicker", "${state.isTimePicker}")
+        if ( state.isTimePicker )
+        {
+            TimePickerDialog( state = state, onEvent = onEvent )
+        }
         HomeBody(
-            onModuleClick = {},
             state = state,
             onEvent = onEvent,
             modifier = Modifier
@@ -81,7 +91,6 @@ fun ModuleScreen(
 
 @Composable
 private fun HomeBody(
-    onModuleClick: (Int) -> Unit,
     state: ModuleState,
     onEvent: KFunction1<ModuleEvent, Unit>,
     modifier: Modifier = Modifier
@@ -106,9 +115,6 @@ private fun HomeBody(
             )
             ModuleList(
                 itemList = state.modules,
-                onModuleClick = {
-                    onModuleClick( it.id )
-                                },
                 onEvent = onEvent,
                 modifier = Modifier.padding(16.dp)
             )
@@ -159,19 +165,19 @@ fun SortModuleList(
 @Composable
 private fun ModuleList(
     itemList: List<Module>,
-    onModuleClick: (Module) -> Unit,
     onEvent: KFunction1<ModuleEvent, Unit>,
     modifier: Modifier
 )
 {
     LazyColumn(modifier = modifier) {
         items(items = itemList, key = { it.id } ) { item ->
-            ModuleCard(module = item,
+            ModuleCard(
+                module = item,
+                onEvent = onEvent,
                 modifier = Modifier
                     .padding(16.dp)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
                     .clickable {
-                        onModuleClick(item)
                         onEvent(ModuleEvent.ShowSettingsDialog(itemList.indexOf(item)))
                     })
         }
@@ -181,8 +187,10 @@ private fun ModuleList(
 @Composable
 private fun ModuleCard(
     module: Module,
+    onEvent: KFunction1<ModuleEvent, Unit>,
     modifier: Modifier = Modifier,
 ) {
+
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
@@ -221,7 +229,11 @@ private fun ModuleCard(
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
-
+                ChooseDescription(
+                    module = module,
+                    onEvent = onEvent,
+                    modifier = Modifier
+                )
             }
         }
     }
@@ -247,23 +259,27 @@ fun chooseIcon( name:String ): Int
  * Choose description.
  */
 @Composable
-fun ChooseDescription( module: Module )
+fun ChooseDescription(
+    module: Module,
+    onEvent: KFunction1<ModuleEvent, Unit>,
+    modifier: Modifier = Modifier
+)
 {
-    if ( module.moduleName == "Alarm" )
+    if ( module.moduleType == "Alarm" )
     {
         Text(
             text = "Alarming time: ${module.alarmingInfo}",
             fontSize = 24.sp,
-            modifier = Modifier
+            modifier = modifier
                 .padding(start = 12.dp)
-                .clickable {  }
+                .clickable { onEvent(ModuleEvent.ShowTimepicker(0)) }
         )
     } else
     {
         Text(
             text = "Status: ${module.lastDeviceState}",
             fontSize = 24.sp,
-            modifier = Modifier.padding(start = 12.dp)
+            modifier = modifier.padding(start = 12.dp)
         )
     }
 }

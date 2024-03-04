@@ -13,6 +13,7 @@ data class ModuleState (
     var isAddingModule: Boolean = false,
     var isShowSettings: Boolean = false,
     var isShowTypeDialog: Boolean = false,
+    var isTimePicker: Boolean = false,
     var moduleID: Int = 0,
     var listIndex: Int = 0,
     var sortType: SortType = SortType.NAME

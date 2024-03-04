@@ -105,11 +105,6 @@ class ModuleViewModel(
                         activeState = !it.activeState
                     ) }
             }
-            is ModuleEvent.SetAlarmingInfo -> {
-                    _state.update { it.copy(
-                        alarmingInfo = event.alarmInfo
-                    ) }
-            }
             is ModuleEvent.SetLastDeviceState -> {
                 _state.update { it.copy(
                     lastDeviceState = event.lastDeviceState
@@ -174,6 +169,24 @@ class ModuleViewModel(
                 _state.update { it.copy(
                     moduleType = event.moduleType,
                     isShowTypeDialog = false
+                ) }
+            }
+
+            ModuleEvent.HideTimepicker -> {
+                _state.update { it.copy(
+                    isTimePicker = false
+                ) }
+            }
+            is ModuleEvent.ShowTimepicker -> {
+                _state.update { it.copy(
+                    alarmingInfo = state.value.modules[event.listIndex].alarmingInfo,
+                    isTimePicker = true
+                ) }
+            }
+            is ModuleEvent.SetAlarmingInfo -> {
+                state.value.modules[state.value.listIndex].alarmingInfo = event.alarmInfo
+                _state.update { it.copy(
+                    isTimePicker = false
                 ) }
             }
         }
